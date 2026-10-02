@@ -9,9 +9,19 @@ const Holdings = () => {
 
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_API_URL}/allHoldings`).then((res) => {
-      // console.log(res.data);
-      setAllHoldings(res.data);
-    });
+      if (Array.isArray(res.data)) {
+          setAllHoldings(res.data);
+        } else if (res.data && Array.isArray(res.data.holdings)) {
+          // In case your API returns { holdings: [...] }
+          setAllHoldings(res.data.holdings);
+        } else {
+          setAllHoldings([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch holdings:", err);
+        setAllHoldings([]);
+      });
   }, []);
 
   // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
